@@ -1,0 +1,22 @@
+configure the raspberry pi to send terminal message through bluetooth
+
+go to /boot/cmdline.txt --> change:
+   console=ttyAMA0,115200 kgdboc=ttyAMA0,115200
+to
+   console=ttyAMA0,9600 kgdboc=ttyAMA0,9600 
+this configure the serial port to be using baud rate to be 9600bps
+
+then set up redirection of terminal messages
+
+go to /etc/inittab --> change:
+   T0:23:respawn:/sbin/getty -L ttyAMA0 115200 vt100
+to:
+   T0:23:respawn:/sbin/getty -L ttyAMA0 9600 vt100
+
+then reboot raspberry pi
+
+on the mac:
+go to setting to connect to bluetooth with default code of 1234
+
+then use command: ls /dev/tty.*  to see if device is connected
+then connect to bluetooth port using: screen /dev/tty.[device name]
