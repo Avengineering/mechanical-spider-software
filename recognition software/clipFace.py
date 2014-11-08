@@ -20,7 +20,7 @@ if __name__=="__main__":
         if c & 0xFF == 27:
             break
         if c & 0xFF == ord('c'):
-            fileName = "./tiffany/{0}.jpg".format(iteration)
+            fileName = "{0}.jpg".format(iteration)
             cv2.imwrite(fileName, face_roi)
             iteration = iteration+1
     cv2.destroyAllWindows()
