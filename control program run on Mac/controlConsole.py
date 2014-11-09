@@ -27,7 +27,10 @@ def writeToConsole(data):
     sys.stdout.write(data)
     return
 
-if __name__=="__main__":
+def console_main():
     while True:
         checkStdin(writeData)
         checkBluetooth(writeToConsole)
+
+if __name__=="__main__":
+    console_main()
