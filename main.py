@@ -10,7 +10,7 @@ def getSerial():
 def checkStdin(callback):
     while sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
         data = sys.stdin.readline()
-        if data == "exit":
+        if data is "exit\n":
             exit()
         callback(data)
 
