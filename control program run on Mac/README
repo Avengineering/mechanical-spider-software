@@ -1,5 +1,10 @@
-controlConsole.py create a bridges the console on Mac
+controlConsole.py:  
+
+it creates a bridges the console on Mac
 to raspberry pi. Standard input from Mac’s console
 will be sent to raspberry pi through bluetooth.
 Console message from bluetooth will also be sent back
 and displayed on Mac’s console.
+
+controlGUI.py:
+It controls raspberry pi using graphics user interface.

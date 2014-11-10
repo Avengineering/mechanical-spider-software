@@ -6,11 +6,9 @@ import serial
 bluetooth = serial.Serial('/dev/tty.HC-06-DevB',9600,bytesize=serial.EIGHTBITS,parity=serial.PARITY_NONE,stopbits=serial.STOPBITS_ONE,timeout=0.1)
 
 def checkBluetooth(callback):
-    #if bluetooth.readable():
     bluetoothData = bluetooth.readline()
-    while bluetoothData:
+    if bluetoothData:
         callback(bluetoothData)
-        bluetoothData = bluetooth.readline()
 
 def checkStdin(callback):
     while sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
@@ -32,5 +30,5 @@ def console_main():
         checkStdin(writeData)
         checkBluetooth(writeToConsole)
 
-#if __name__=="__main__":
-    #console_main()
+if __name__=="__main__":
+    console_main()
