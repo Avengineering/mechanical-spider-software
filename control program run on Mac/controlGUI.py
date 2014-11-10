@@ -21,22 +21,27 @@ class application(Frame):
         self.style.theme_use("default")
         #create widgets here
         
+        #create menu bar
+        self.gotoTerminal_button = Tkinter.Button(self, width=17, text="GotoTerminal",command=self.gotoTerminal)
+        self.gotoTerminal_button.grid(row=0,column=0,sticky=Tkinter.W)
+        
+        self.gotoButtonControl_button = Tkinter.Button(self, width=17, text="GotoButtonControl",command=self.gotoButtonControl)
+        self.gotoButtonControl_button.grid(row=0,column=1,sticky=Tkinter.W)
+        
+        self.gotoHandControl_button = Tkinter.Button(self,width=17, text="GotoHandControl",command=self.gotoHandControl)
+        self.gotoHandControl_button.grid(row=0,column=2,sticky=Tkinter.W)
+        
         #terminal
         self.terminal = Tkinter.Text(self,width=80, height=20,wrap=Tkinter.WORD)
-        self.terminal.grid(row=0,column=0,columnspan=4,rowspan=2,sticky=Tkinter.W)
+        self.terminal.grid(row=1,column=0,columnspan=4,rowspan=2,sticky=Tkinter.W)
         #entry
         self.entry = Tkinter.Entry(self,width=60)
-        self.entry.grid(row=3,column=0,columnspan=3,sticky=Tkinter.W)
+        self.entry.grid(row=4,column=0,columnspan=3,sticky=Tkinter.W)
         #submit button
         self.submit_button = Tkinter.Button(self,text="Submit",width=15,command=self.submit)
-        self.submit_button.grid(row=3,column=3,sticky=Tkinter.W)
+        self.submit_button.grid(row=4,column=3,sticky=Tkinter.W)
         self.root.bind('<Return>', self.Return)
         self.root.bind('<Tab>', self.Tab)
-        #scroll bar
-#        self.scrollbar = Tkinter.Scrollbar(self)
-#        self.scrollbar.grid(row=0,column=4,rowspan=1,sticky=Tkinter.W)
-#        self.terminal.config(yscrollcommand=self.scrollbar.set)
-#        self.scrollbar.config(command=self.terminal.yview)
 
         self.newData = ""
     
@@ -48,6 +53,21 @@ class application(Frame):
             self.newData = content
         else:
             return
+
+    def clear(self):
+        self.terminal.grid_remove()
+        self.entry.grid_remove()
+        self.submit_button.grid_remove()
+        self.clear_button.grid_remove()
+    
+    def gotoTerminal(self):
+        return
+    
+    def gotoButtonControl(self):
+        return
+    
+    def gotoHandControl(self):
+        return
     
     #binding keys
     def Return(self,event=None):
@@ -71,14 +91,18 @@ def main():
     def writeData():
         data = app.getNewData()
         if data:
-            bluetooth.write(data+"\n")
+            if data == "\exit":
+                bluetooth.write('\x03')
+            else:
+                bluetooth.write(data+"\n")
 
     def readBluetoothData():
         bluetoothData = bluetooth.readline()
         for i in range (0,36):
             bluetoothData = bluetoothData.replace("[01;{0}m".format(i),"")
         bluetoothData = bluetoothData.replace("[0m","")
-        app.writeToConsole(bluetoothData)
+        if bluetoothData:
+                app.writeToConsole(bluetoothData)
 
     
     def communication():
