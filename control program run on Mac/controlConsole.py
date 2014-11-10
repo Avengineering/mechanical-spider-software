@@ -32,5 +32,5 @@ def console_main():
         checkStdin(writeData)
         checkBluetooth(writeToConsole)
 
-if __name__=="__main__":
-    console_main()
+#if __name__=="__main__":
+    #console_main()

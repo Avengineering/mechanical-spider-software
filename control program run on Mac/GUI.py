@@ -5,37 +5,61 @@ from ttk import Frame, Button, Style
 
 class Example(Frame):
     
-    def __init__(self, parent):
-        Frame.__init__(self, parent)
+    def __init__(self, root):
+        Frame.__init__(self, root)
         self.grid()
-        self.parent = parent
+        self.root = root
         self.initUI()
     
     def initUI(self):
         
-        self.parent.title("Control GUI")
+        self.root.title("Control GUI")
         self.style = Style()
         self.style.theme_use("default")
         #create widgets here
-        self.click = 0
-        self.button = Tkinter.Button(self)
-        self.button["text"] = "Total Clicks: 0"
-        self.button["command"] = self.update_count
-        self.button.grid(row=0,column=0)
+        
+        #buttons
+        #self.click = 0
+        #self.button = Tkinter.Button(self)
+        #self.button["text"] = "Total Clicks: 0"
+        #self.button["command"] = self.update_count
+        #self.button.grid(row=0,column=0)
     
-        self.click2 = 0
-        self.button2 = Tkinter.Button(self)
-        self.button2["text"] = "Total Clicks: 0"
-        self.button2["command"] = self.update_count2
-        self.button2.grid(row=0,column=1)
+        #label
+        self.instruction = Tkinter.Label(self, text = "            Enter the password                ")
+        self.instruction.grid(row=0,column=0,columnspan=2,sticky=Tkinter.W)
+    
+        #Entry
+        self.password = Tkinter.Entry(self)
+        self.password.grid(row=3,column=0,sticky=Tkinter.W)
+    
+        #summit button
+        self.submit_button = Tkinter.Button(self, text="Submit", command=self.reveal)
+        self.submit_button.grid(row=3,column=1,sticky=Tkinter.W)
+        self.root.bind('<Return>',self.Return)
+    
+        #text
+        self.text = Tkinter.Text(self,width=35, height=5,wrap=Tkinter.WORD)
+        self.text.grid(row=1,column=0,columnspan=2,rowspan=2,sticky=Tkinter.W)
+    
+    def reveal(self):
+        content = self.password.get()
+        if content == "password":
+            message = "You have access\n"
+        else:
+            message = "Access denied\n"
+        #self.text.delete(0.0,Tkinter.END)
+        self.text.insert(Tkinter.END,message)
+        self.password.delete(0,Tkinter.END)
+
+    def Return(self, event=None):
+        self.reveal()
     
     def update_count(self):
         self.click += 1
         self.button["text"] = "Total Clicks: " + str(self.click)
-    def update_count2(self):
-        self.click2 += 1
-        self.button2["text"] = "Total Clicks: " + str(self.click2)
 
+app = 0
 
 def main():
     
