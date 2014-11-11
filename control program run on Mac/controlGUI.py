@@ -12,9 +12,9 @@ class application(Frame):
         Frame.__init__(self, root)
         self.grid()
         self.root = root
-        self.initUI()
+        self.initTerminal()
     
-    def initUI(self):
+    def initTerminal(self):
         
         self.root.title("Control GUI")
         self.style = Style()
@@ -55,12 +55,12 @@ class application(Frame):
             return
 
     def clear(self):
-        self.terminal.grid_remove()
-        self.entry.grid_remove()
-        self.submit_button.grid_remove()
-        self.clear_button.grid_remove()
+        self.grid_forget()
     
     def gotoTerminal(self):
+        self.clear()
+        self.grid()
+        self.initTerminal()
         return
     
     def gotoButtonControl(self):
