@@ -3,7 +3,7 @@ import Tkinter
 from ttk import Frame, Button, Style
 import serial
 
-bluetooth = serial.Serial('/dev/tty.HC-06-DevB',9600,bytesize=serial.EIGHTBITS,parity=serial.PARITY_NONE,stopbits=serial.STOPBITS_ONE,timeout=0.1)
+#bluetooth = serial.Serial('/dev/tty.HC-06-DevB',9600,bytesize=serial.EIGHTBITS,parity=serial.PARITY_NONE,stopbits=serial.STOPBITS_ONE,timeout=0.1)
 
 
 class application(Frame):
@@ -150,14 +150,14 @@ def main():
 
     
     def communication():
-        writeData()
-        readBluetoothData()
-        root.after(1,communication)
+        #writeData()
+        #readBluetoothData()
+        root.after(2,communication)
     
     root = Tk()
     root.geometry("600x430+300+300")
     app = application(root)
-    root.after(1,communication)
+    root.after(2,communication)
     root.mainloop()
 
 
