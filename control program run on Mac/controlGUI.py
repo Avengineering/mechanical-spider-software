@@ -12,15 +12,14 @@ class application(Frame):
         Frame.__init__(self, root)
         self.grid()
         self.root = root
-        self.initTerminal()
-    
-    def initTerminal(self):
-        
         self.root.title("Control GUI")
         self.style = Style()
         self.style.theme_use("default")
-        #create widgets here
-        
+        self.initMenu()
+        self.initWidgets()
+        self.initTerminal()
+    
+    def initMenu(self):
         #create menu bar
         self.gotoTerminal_button = Tkinter.Button(self, width=17, text="GotoTerminal",command=self.gotoTerminal)
         self.gotoTerminal_button.grid(row=0,column=0,sticky=Tkinter.W)
@@ -30,20 +29,44 @@ class application(Frame):
         
         self.gotoHandControl_button = Tkinter.Button(self,width=17, text="GotoHandControl",command=self.gotoHandControl)
         self.gotoHandControl_button.grid(row=0,column=2,sticky=Tkinter.W)
-        
-        #terminal
+    
+        self.newData = ""
+    
+    def initWidgets(self):
+        #widgets for terminal
         self.terminal = Tkinter.Text(self,width=80, height=20,wrap=Tkinter.WORD)
+        self.entry = Tkinter.Entry(self,width=60)
+        self.submit_button = Tkinter.Button(self,text="Submit",width=15,command=self.submit)
+        
+        #widgets for ButtonControl
+        self.forward_button = Tkinter.Button(self, width=17,text="Forward", command=self.forward)
+        self.backward_button = Tkinter.Button(self, width=17, text="Backward", command=self.backward)
+        self.left_button = Tkinter.Button(self, width=17, text="Left", command=self.turnLeft)
+        self.right_button = Tkinter.Button(self, width=17, text="Right", command=self.turnRight)
+        self.stop_button = Tkinter.Button(self, width=17, text="Stop", command=self.stop)
+        return
+
+    def initTerminal(self):
+        #define widgets layout here
+        #terminal
         self.terminal.grid(row=1,column=0,columnspan=4,rowspan=2,sticky=Tkinter.W)
         #entry
-        self.entry = Tkinter.Entry(self,width=60)
         self.entry.grid(row=4,column=0,columnspan=3,sticky=Tkinter.W)
         #submit button
-        self.submit_button = Tkinter.Button(self,text="Submit",width=15,command=self.submit)
+        
         self.submit_button.grid(row=4,column=3,sticky=Tkinter.W)
         self.root.bind('<Return>', self.Return)
         self.root.bind('<Tab>', self.Tab)
-
-        self.newData = ""
+    
+    def initButtonControl(self):
+        self.forward_button.grid(row=1, column=1, sticky=Tkinter.W)
+        self.backward_button.grid(row=3, column=1, sticky=Tkinter.W)
+        self.left_button.grid(row=2, column=0, sticky=Tkinter.W)
+        self.right_button.grid(row=2, column=2, sticky=Tkinter.W)
+        self.stop_button.grid(row=2, column=1, sticky=Tkinter.W)
+        return
+    
+    
     
     def submit(self):
         content = self.entry.get()
@@ -53,22 +76,43 @@ class application(Frame):
             self.newData = content
         else:
             return
-
-    def clear(self):
-        self.grid_forget()
     
+    #clear all widgets
+    def clear(self):
+        self.terminal.grid_remove()
+        self.entry.grid_remove()
+        self.submit_button.grid_remove()
+        self.forward_button.grid_remove()
+        self.backward_button.grid_remove()
+        self.right_button.grid_remove()
+        self.left_button.grid_remove()
+        self.stop_button.grid_remove()
+    
+    #menu navigation buttons callback
     def gotoTerminal(self):
         self.clear()
-        self.grid()
         self.initTerminal()
         return
-    
     def gotoButtonControl(self):
+        self.clear()
+        self.initButtonControl()
         return
-    
     def gotoHandControl(self):
         return
-    
+
+    #Button Control callback
+    def forward(self):
+        self.newData = "forward"
+        return
+    def backward(self):
+        self.newData = "backward"
+    def turnLeft(self):
+        self.newData = "left"
+    def turnRight(self):
+        self.newData = "right"
+    def stop(self):
+        self.newData = "stop"
+
     #binding keys
     def Return(self,event=None):
         self.submit()
@@ -108,12 +152,12 @@ def main():
     def communication():
         writeData()
         readBluetoothData()
-        root.after(10,communication)
+        root.after(1,communication)
     
     root = Tk()
     root.geometry("600x430+300+300")
     app = application(root)
-    root.after(10,communication)
+    root.after(1,communication)
     root.mainloop()
 
 
