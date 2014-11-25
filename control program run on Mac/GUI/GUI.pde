@@ -162,7 +162,8 @@ void printToTerminal(String Data)
       incomingData = incomingData.replace(pattern,"");
     }
     incomingData = incomingData.replace("[0m","");
-    terminal.append(incomingData);
+    if(incomingData.length()>0)
+      terminal.append(incomingData);
     incomingData="";
     terminal.scroll(1);
   }
@@ -190,6 +191,8 @@ public void input(String text)
 public void toggleControl(int value)
 {
   joystickControl = value==1 ? true : false;
+  if(mySerial!=null && value == 0)
+    mySerial.write("sl\n");
 }
 
 void keyPressed()
