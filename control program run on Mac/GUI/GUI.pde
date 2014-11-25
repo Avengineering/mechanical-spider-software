@@ -7,12 +7,16 @@ ControlP5 cp5;
 Textarea terminal;
 Textfield input;
 DropdownList SerialSelect;
+Toggle toggleControl;
 
 String incomingData="";
 
 int joystickXpos = 595;
 int joystickYpos = 280;
 int joystickOuterRadius = 115;
+
+boolean joystickControl = false;
+int numOfSpeeds = 8;
 void setup()
 {
   size(750,500);
@@ -57,7 +61,16 @@ void gui()
                            .setPosition(0,350)
                            .setSize(450,25)
                            .setFont(createFont("arial",16))
-                           .setGroup("Terminal");
+                           .setGroup("Terminal")
+                           .setFocus(true)
+                           .keepFocus(true);
+                           
+  toggleControl = cp5.addToggle("toggleControl")
+                     .setLabel("ON              OFF")
+                     .setPosition(480,130)
+                     .setSize(70,25)
+                     .setValue(false)
+                     .setMode(ControlP5.SWITCH);
 }
 
 int jx=0; int jy=0;
@@ -65,10 +78,12 @@ int jxDst=0; int jyDst=0;
 void createJoystick()
 {
   int x = joystickXpos; int y = joystickYpos;
+  //set the destination of where joystick moves to
   jxDst = jxDst==0 ? x : jxDst;
   jyDst = jyDst==0 ? y : jyDst;
-  jx = jx==0 ? x : (jx+jxDst)/2;
-  jy = jy==0 ? y : (jy+jyDst)/2;
+  //joystick moves to destination smoothly
+  jx = jx==0 ? x : jx+(jxDst-jx)/3;//(jx+jxDst)/2;
+  jy = jy==0 ? y : jy+(jyDst-jy)/3;//(jy+jyDst)/2;
   int outerRadius = joystickOuterRadius;
   int innerRadius = outerRadius/3;
   ellipseMode(CENTER);
@@ -83,6 +98,39 @@ void createJoystick()
   ellipse(x, y, 2*outerRadius, 2*outerRadius);
   fill(color(34,42,240));
   ellipse(jx, jy, 2*innerRadius, 2*innerRadius);
+  /////////////////////////////
+  //send to serial to control//
+  /////////////////////////////
+  int jcorX = jx-joystickXpos;  //cordinate of x and y from center of joystick
+  int jcorY = -(jy-joystickYpos); //reverse the y cordinate
+  float length = sqrt(pow(jcorX,2)+pow(jcorY,2)); //displacement of joystick from center
+  int avgSpeed = (int)(length/(joystickOuterRadius/numOfSpeeds));
+  float angle = atan2((float)jcorY,(float)jcorX); //angle from x-axis
+  angle = angle>=0 ? angle : angle + 2*PI;
+  int sectorNum = (int)(angle/(2*PI/(4*2*numOfSpeeds)))+1;
+  int Lmotor=0, Rmotor=0;
+  if(sectorNum >=1 && sectorNum<=2*numOfSpeeds)
+  {
+    Lmotor = avgSpeed;
+    Rmotor = avgSpeed*(-numOfSpeeds+sectorNum)/numOfSpeeds;
+  }else if(sectorNum<=2*2*numOfSpeeds)
+  {
+    Lmotor = avgSpeed*(numOfSpeeds-(sectorNum-2*numOfSpeeds))/numOfSpeeds;
+    Rmotor = avgSpeed;
+  }else if(sectorNum<=3*2*numOfSpeeds)
+  {
+    Lmotor = -avgSpeed;
+    Rmotor = avgSpeed*(numOfSpeeds-(sectorNum-2*2*numOfSpeeds))/numOfSpeeds;
+  }else
+  {
+    Lmotor = avgSpeed*(-numOfSpeeds+(sectorNum-3*2*numOfSpeeds))/numOfSpeeds;
+    Rmotor = -avgSpeed;
+  }
+  println("Lmotor: "+Lmotor+" Rmotor: "+Rmotor);
+  if(mySerial!=null && joystickControl)
+  {
+    mySerial.write(Lmotor+","+Rmotor+"\n");
+  }
 }
 
 void draw()
@@ -111,6 +159,7 @@ void printToTerminal(String Data)
     incomingData = incomingData.replace("[0m","");
     terminal.append(incomingData);
     incomingData="";
+    terminal.scroll(1);
   }
 }
 
@@ -131,6 +180,11 @@ public void input(String text)
 {
   if(mySerial == null) return;
   mySerial.write(text+"\n");
+}
+
+public void toggleControl(int value)
+{
+  joystickControl = value==1 ? true : false;
 }
 
 void keyPressed()
