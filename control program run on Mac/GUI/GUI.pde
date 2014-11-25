@@ -17,6 +17,8 @@ int joystickOuterRadius = 115;
 
 boolean joystickControl = false;
 int numOfSpeeds = 8;
+int prevLmotor=0;
+int prevRmotor=0;
 void setup()
 {
   size(750,500);
@@ -126,10 +128,13 @@ void createJoystick()
     Lmotor = avgSpeed*(-numOfSpeeds+(sectorNum-3*2*numOfSpeeds))/numOfSpeeds;
     Rmotor = -avgSpeed;
   }
-  println("Lmotor: "+Lmotor+" Rmotor: "+Rmotor);
-  if(mySerial!=null && joystickControl)
+  if(mySerial!=null && joystickControl 
+    && (Lmotor!=prevLmotor || Rmotor!=prevRmotor))
   {
-    mySerial.write(Lmotor+","+Rmotor+"\n");
+    mySerial.write(Lmotor+","+Rmotor+'\n');
+    prevLmotor = Lmotor;
+    prevRmotor = Rmotor;
+    print(Lmotor+","+Rmotor+'\n');
   }
 }
 

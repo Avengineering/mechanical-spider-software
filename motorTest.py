@@ -3,11 +3,19 @@ import sys
 import select
 import time
 
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(18, GPIO.OUT)
-GPIO.setup(2, GPIO.OUT)
+LmotorPulsePin = 18
+LmotorDirPin = 2
+RmotorPulsePin = 23
+RmotorDirPin = 24
 
-pwm = GPIO.PWM(18, 10)
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(LmotorPulsePin, GPIO.OUT)
+GPIO.setup(LmotorDirPin, GPIO.OUT)
+GPIO.setup(RmotorPulsePin, GPIO.OUT)
+GPIO.setup(RmotorDirPin, GPIO.OUT)
+
+Lpwm = GPIO.PWM(LmotorPulsePin, 10)
+Rpwm = GPIO.PWM(RmotorPulsePin, 10)
 array = (1175, 1319, 1046, 880, 880, 980, 784, 784, 587, 660, 523, 440, 440, 494, 392, 392\
          , 294, 330, 262, 220, 220, 247, 220, 208, 196, 196, 10, 10, 784, 784, 294, 311, \
          330, 523, 523, 330, 523, 523, 330, 523, 523, 523, 523, 523, 10, 1046, 1175, 1245,\
@@ -33,27 +41,44 @@ def checkStdin():
             if data == "exit\n":
                 GPIO.cleanup()
                 exit()
-            if data == "p\n":
-                GPIO.output(2,GPIO.LOW)
-                pwm.start(1)
             if data == "s\n":
-                pwm.stop()
-            if data[0] == 'f':
-                pwm.start(1)
-                frequency = int(data[1:])
-                GPIO.output(2, GPIO.LOW)
-                pwm.ChangeFrequency(frequency)
-            if data[0] == 'b':
-                pwm.start(1)
-                frequency = int(data[1:])
-                GPIO.output(2, GPIO.HIGH)
-                pwm.ChangeFrequency(frequency)
+                Lpwm.stop()
+                Rpwm.stop()
             if data == "play\n":
-                pwm.start(1)
+                Lpwm.start(1)
+                Rpwm.start(1)
                 for i in array:
-                    pwm.ChangeFrequency(i)
+                    Lpwm.ChangeFrequency(i)
+                    Rpwm.ChangeFrequency(i)
                     time.sleep(0.2)
-                pwm.stop()
+                Lpwm.stop()
+                Rpwm.stop()
+            if "," in data:
+                splitData = data.split(",")
+                LmotorSpeed = 100*int(splitData[0])
+                RmotorSpeed = 100*int(splitData[1])
+                Lpwm.start(1)
+                Rpwm.start(1)
+                if LmotorSpeed >= 0:
+                    if LmotorSpeed==0:
+                        Lpwm.stop()
+                    else:
+                        GPIO.output(LmotorDirPin, GPIO.LOW)
+                        Lpwm.ChangeFrequency(LmotorSpeed)
+                else:
+                    GPIO.output(LmotorDirPin, GPIO.HIGH)
+                    Lpwm.ChangeFrequency(-LmotorSpeed)
+                if RmotorSpeed >=0:
+                    if RmotorSpeed==0:
+                        Rpwm.stop()
+                    else:
+                        GPIO.output(RmotorDirPin, GPIO.LOW)
+                        Rpwm.ChangeFrequency(RmotorSpeed)
+                else:
+                    GPIO.output(RmotorDirPin, GPIO.HIGH)
+                    Rpwm.ChangeFrequency(-RmotorSpeed)
+
+
 
 
 if __name__=="__main__":
