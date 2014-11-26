@@ -19,6 +19,10 @@ boolean joystickControl = false;
 int numOfSpeeds = 8;
 int prevLmotor=0;
 int prevRmotor=0;
+
+Knob Rknob;
+Knob Lknob;
+
 void setup()
 {
   size(750,500);
@@ -73,6 +77,30 @@ void gui()
                      .setSize(70,25)
                      .setValue(false)
                      .setMode(ControlP5.SWITCH);
+        
+  Lknob = cp5.addKnob("Lknob")
+             .setLabel("L motor speed")
+             .setRange(-numOfSpeeds,numOfSpeeds)
+             .setValue(0)
+             .setPosition(490,390)
+             .setRadius(45)
+             .setNumberOfTickMarks(2*numOfSpeeds)
+             .setTickMarkLength(4)
+             .snapToTickMarks(true)
+             ;
+             
+  Rknob = cp5.addKnob("Rknob")
+             .setLabel("R motor speed")
+             .setRange(-numOfSpeeds,numOfSpeeds)
+             .setValue(0)
+             .setPosition(615,390)
+             .setRadius(45)
+             .setNumberOfTickMarks(2*numOfSpeeds)
+             .setTickMarkLength(4)
+             .snapToTickMarks(true)
+             ;
+                     
+                     
 }
 
 int jx=0; int jy=0;
@@ -128,6 +156,8 @@ void createJoystick()
     Lmotor = avgSpeed*(-numOfSpeeds+(sectorNum-3*2*numOfSpeeds))/numOfSpeeds;
     Rmotor = -avgSpeed;
   }
+  Lknob.setValue(Lmotor);
+  Rknob.setValue(Rmotor);
   if(mySerial!=null && joystickControl 
     && (Lmotor!=prevLmotor || Rmotor!=prevRmotor))
   {
