@@ -1,13 +1,21 @@
 import processing.serial.*;
 import controlP5.*;
+import ddf.minim.*;
 
 Serial mySerial = null;
 ControlP5 cp5;
+AudioPlayer player;
+Minim minim;
 
 Textarea terminal;
 Textfield input;
 DropdownList SerialSelect;
 Toggle toggleControl;
+Knob Rknob;
+Knob Lknob;
+ListBox musicListBox;
+Chart musicChart;
+Button playButton;
 
 String incomingData="";
 
@@ -20,14 +28,24 @@ int numOfSpeeds = 8;
 int prevLmotor=0;
 int prevRmotor=0;
 
-Knob Rknob;
-Knob Lknob;
 
+File dir;
+String[] musicList;
 void setup()
 {
   size(750,500);
   cp5 = new ControlP5(this);
   gui();
+  //music part
+  minim = new Minim(this);
+  dir = new File(dataPath(""));
+  File[] listOfFiles = dir.listFiles();
+  musicList = new String[listOfFiles.length];
+
+  for(int i=0; i<listOfFiles.length; i++)
+  if(listOfFiles[i].isFile() && listOfFiles[i].getName().indexOf(".mp3")>=0)
+      musicList[i] = listOfFiles[i].getName();
+  musicGui();
 }
 
 void gui()
@@ -103,6 +121,60 @@ void gui()
                      
 }
 
+void musicGui()
+{
+  musicListBox = cp5.addListBox("musicListBox")
+                    .setPosition(10, 425)
+                    .setSize(135,65)
+                    .setItemHeight(15)
+                    .setBarHeight(15)
+                    .setLabel("Select Music")
+                    .setScrollbarWidth(10)
+                    ;
+                
+  musicListBox.captionLabel().style().marginTop=3;
+  int count = 0;
+  for(int i=0; i<musicList.length; i++){
+    if(musicList[i]!=null){
+      musicListBox.addItem(musicList[i], count);
+      count += 1;
+    }
+  }
+  
+  musicChart = cp5.addChart("musicChart")
+                  .setPosition(210,410)
+                  .setSize(250, 80)
+                  .setRange(0,10)
+                  .setView(Chart.BAR);
+        //musicChart.getColor().setBackground(color(0));
+        musicChart.addDataSet("wave")
+                  .setColors("wave", color(255,0,0), color(0,255,0))
+                  .setData("wave", new float[100])
+                  ;
+  PImage[] images = {loadImage("button_a.png")};         
+  playButton = cp5.addButton("playButton")
+                  .setPosition(180,210)
+                  .setImages(images)
+                  .updateSize()
+                  ;
+}
+
+void updateChart()
+{
+  if(player!=null && player.isPlaying())
+  {
+    float[] wave = new float[player.bufferSize()];
+    for(int i=0; i<player.bufferSize(); i++)
+    {
+      wave[i] = player.left.get(i)*10;
+    }
+    musicChart.setData("wave", wave);
+  }else
+  {
+    musicChart.setData("wave", new float[100]);
+  }
+}
+
 int jx=0; int jy=0;
 int jxDst=0; int jyDst=0;
 void createJoystick()
@@ -172,6 +244,7 @@ void draw()
 {
   background(0);
   createJoystick();
+  updateChart();
 }
 
 void serialEvent(Serial p)
@@ -208,6 +281,13 @@ void controlEvent(ControlEvent event)
       if(mySerial != null){mySerial.stop(); mySerial = null;}
       if(event.value()==0){return;}
       mySerial = new Serial(this, SerialSelect.getItem((int)event.value()).getName(), 9600);
+    }else if(event.getGroup().getName()=="musicListBox")
+    {
+      if(player!=null && player.isPlaying())
+        player.close();
+      minim.stop();
+      player = minim.loadFile(musicListBox.getItem((int)event.value()).getName());
+      player.play();
     }
   }
 }
