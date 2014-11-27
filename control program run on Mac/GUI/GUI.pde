@@ -151,9 +151,9 @@ void musicGui()
                   .setColors("wave", color(255,0,0), color(0,255,0))
                   .setData("wave", new float[100])
                   ;
-  PImage[] images = {loadImage("button_a.png")};         
+  PImage[] images = {loadImage("button_a.png"),loadImage("button_a.png"),loadImage("button_a.png")};         
   playButton = cp5.addButton("playButton")
-                  .setPosition(180,210)
+                  .setPosition(153,420)
                   .setImages(images)
                   .updateSize()
                   ;
