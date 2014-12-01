@@ -31,6 +31,9 @@ int prevRmotor=0;
 
 File dir;
 String[] musicList;
+boolean playMusic = false;
+int musicCount;
+int currentMusic=0;
 void setup()
 {
   size(750,500);
@@ -133,11 +136,11 @@ void musicGui()
                     ;
                 
   musicListBox.captionLabel().style().marginTop=3;
-  int count = 0;
+  musicCount = 0;
   for(int i=0; i<musicList.length; i++){
     if(musicList[i]!=null){
-      musicListBox.addItem(musicList[i], count);
-      count += 1;
+      musicListBox.addItem(musicList[i], musicCount);
+      musicCount += 1;
     }
   }
   
@@ -151,9 +154,9 @@ void musicGui()
                   .setColors("wave", color(255,0,0), color(0,255,0))
                   .setData("wave", new float[100])
                   ;
-  PImage[] images = {loadImage("button_a.png"),loadImage("button_a.png"),loadImage("button_a.png")};         
+  PImage[] images = {loadImage("Pause.png"),loadImage("Pause.png"),loadImage("Play.png")};         
   playButton = cp5.addButton("playButton")
-                  .setPosition(153,420)
+                  .setPosition(153,440)
                   .setImages(images)
                   .updateSize()
                   ;
@@ -172,6 +175,17 @@ void updateChart()
   }else
   {
     musicChart.setData("wave", new float[100]);
+  }
+  //play next music
+  if(playMusic && player!=null && !player.isPlaying()
+   && musicCount!=0)
+  {
+    currentMusic = (currentMusic+1)%musicCount;
+    String nextMusicName = musicListBox.getItem(currentMusic).getName();
+    player.close();
+    minim.stop();
+    player = minim.loadFile(nextMusicName);
+    player.play();
   }
 }
 
@@ -288,6 +302,8 @@ void controlEvent(ControlEvent event)
       minim.stop();
       player = minim.loadFile(musicListBox.getItem((int)event.value()).getName());
       player.play();
+      playMusic = true;
+      currentMusic = (int) event.value();
     }
   }
 }
@@ -303,6 +319,24 @@ public void toggleControl(int value)
   joystickControl = value==1 ? true : false;
   if(mySerial!=null && value == 0)
     mySerial.write("sl\n");
+}
+
+public void playButton()
+{
+  if(playMusic==false){
+    PImage[] images = {loadImage("Pause.png"), loadImage("Pause.png"), loadImage("Play.png")};
+    playButton.setImages(images);
+    playButton.updateSize();
+    if(player!=null)
+      player.play();
+  }else if(playMusic==true){
+    PImage[] images = {loadImage("Play.png"), loadImage("Play.png"), loadImage("Pause.png")};
+    playButton.setImages(images);
+    playButton.updateSize();
+    if(player!=null && player.isPlaying())
+      player.pause();
+  }
+  playMusic = !playMusic;
 }
 
 void keyPressed()
