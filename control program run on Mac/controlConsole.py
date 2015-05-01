@@ -3,7 +3,7 @@ import select
 import time
 import serial
 
-bluetooth = serial.Serial('/dev/tty.HC-06-DevB',9600,bytesize=serial.EIGHTBITS,parity=serial.PARITY_NONE,stopbits=serial.STOPBITS_ONE,timeout=0.1)
+bluetooth = serial.Serial('/dev/tty.usbserial-AM01VE6F',9600,bytesize=serial.EIGHTBITS,parity=serial.PARITY_NONE,stopbits=serial.STOPBITS_ONE,timeout=0.1)
 
 def checkBluetooth(callback):
     bluetoothData = bluetooth.readline()

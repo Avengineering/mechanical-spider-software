@@ -100,10 +100,10 @@ def executeCommand(data):
         if RmotorSpeed==0:
             Rpwm.stop()
         else:
-            GPIO.output(RmotorDirPin, GPIO.LOW)
+            GPIO.output(RmotorDirPin, GPIO.HIGH)
             Rpwm.ChangeFrequency(RmotorSpeed)
     else:
-        GPIO.output(RmotorDirPin, GPIO.HIGH)
+        GPIO.output(RmotorDirPin, GPIO.LOW)
         Rpwm.ChangeFrequency(-RmotorSpeed)
 
 def checkJob():
