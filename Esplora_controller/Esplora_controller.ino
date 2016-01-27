@@ -79,11 +79,11 @@ void loop() {
     lastTimeSendCommand = currentTime;
   }
   
-  if(Esplora.readButton(SWITCH_1)==LOW){
+  /*if(Esplora.readButton(SWITCH_1)==LOW){
     Serial1.println("st");
   }
   if(Esplora.readButton(SWITCH_3)==LOW){
     Serial1.println("sl");
-  }
+  }*/
   
 }

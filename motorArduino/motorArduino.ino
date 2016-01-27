@@ -2,10 +2,10 @@
 
 QueueList<String> jobQueue;
 
-int LmotorPulsePin = 3;
-int LmotorDirPin = 2;
-int RmotorPulsePin = 9;
-int RmotorDirPin = 8;
+int RmotorPulsePin = 3;
+int RmotorDirPin = 2;
+int LmotorPulsePin = 9;
+int LmotorDirPin = 8;
 int sleepPin = 7;
 
 float lastTimeExec=0;
@@ -68,8 +68,8 @@ void executeCommand(){
       }
       else{
         digitalWrite(sleepPin, HIGH);
-        float Lfreq = 100.0*((int)command[0]);
-        float Rfreq = 100.0*((int)command[1]);
+        float Lfreq = 60.0*((int)command[0]);
+        float Rfreq = 60.0*((int)command[1]);
         if(Lfreq > -1000 && Lfreq < 1000 && Rfreq > -1000 && Rfreq < 1000){
           if(Lfreq < 0){
             digitalWrite(LmotorDirPin, HIGH);
